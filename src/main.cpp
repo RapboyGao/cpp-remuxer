@@ -3,8 +3,11 @@
 #include "cli_parser.h"
 #include "bd_scanner.h"
 #include "mpls_parser.h"
-#include "remuxer.h"
 #include "logger.h"
+
+#ifndef BUILD_MINIMAL
+#include "remuxer.h"
+#endif
 
 int main(int argc, char* argv[]) {
     // Initialize logger
@@ -25,6 +28,13 @@ int main(int argc, char* argv[]) {
     Logger::info("Starting bdremux...");
     Logger::debug("Input: " + args.input);
     Logger::debug("Output: " + args.output);
+    
+    // Check if running in minimal mode
+    #ifdef BUILD_MINIMAL
+    Logger::warning("Running in minimal mode (no FFmpeg support)");
+    Logger::warning("This build only supports Blu-ray scanning and MPLS parsing");
+    Logger::warning("To enable remuxing, rebuild with FFmpeg libraries");
+    #endif
     
     // Scan Blu-ray structure
     BDStructure bdStruct;
@@ -53,13 +63,27 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    // Remux to MKV
+    // Remux to MKV (only if FFmpeg is available)
+    #ifndef BUILD_MINIMAL
     if (!remuxToMKV(mplsInfo, args, bdStruct.streamDir)) {
         Logger::error("Failed to remux to MKV");
         return 1;
     }
     
     Logger::info("Remux completed successfully!");
+    #else
+    Logger::info("MPLS parsing completed successfully!");
+    Logger::info("Found " + std::to_string(mplsInfo.segments.size()) + " segments");
+    Logger::info("Duration: " + std::to_string(mplsInfo.duration / 1000 / 60) + "m " + 
+                 std::to_string((mplsInfo.duration / 1000) % 60) + "s");
+    Logger::info("Chapters: " + std::to_string(mplsInfo.chapterTimes.size() - 1));
+    
+    // Print segment information
+    for (size_t i = 0; i < mplsInfo.segments.size(); i++) {
+        const auto& segment = mplsInfo.segments[i];
+        Logger::debug("Segment " + std::to_string(i + 1) + ": " + segment.m2tsPath);
+    }
+    #endif
     
     return 0;
 }

@@ -15,7 +15,7 @@ struct BDStructure {
 struct PlaylistInfo {
     std::string path;          // Path to the playlist file
     uint64_t duration;         // Duration in milliseconds
-    int segmentCount;          // Number of segments
+    size_t segmentCount;       // Number of segments
 };
 
 /**

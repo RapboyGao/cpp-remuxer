@@ -1,7 +1,7 @@
 #include "cli_parser.h"
-#include <getopt.h>
 #include <iostream>
-#include <cstring>
+#include <string>
+#include <map>
 
 static void printHelp() {
     std::cout << "Usage: bdremux [options]" << std::endl;
@@ -24,56 +24,49 @@ bool parseCLIArgs(int argc, char* argv[], CLIArgs& args) {
     args.chapters = true;
     args.verbose = false;
     
-    // Define long options
-    static struct option long_options[] = {
-        {"input", required_argument, 0, 'i'},
-        {"playlist", required_argument, 0, 'p'},
-        {"output", required_argument, 0, 'o'},
-        {"audio", required_argument, 0, 'a'},
-        {"subtitle", required_argument, 0, 's'},
-        {"chapters", no_argument, 0, 'c'},
-        {"verbose", no_argument, 0, 'v'},
-        {"help", no_argument, 0, 'h'},
-        {0, 0, 0, 0}
-    };
-    
-    int option_index = 0;
-    int c;
-    
-    // Parse arguments
-    while ((c = getopt_long(argc, argv, "i:p:o:a:s:cv", long_options, &option_index)) != -1) {
-        switch (c) {
-            case 'i':
-                args.input = optarg;
-                break;
-            case 'p':
-                args.playlist = optarg;
-                break;
-            case 'o':
-                args.output = optarg;
-                break;
-            case 'a':
-                args.audio = optarg;
-                break;
-            case 's':
-                args.subtitle = optarg;
-                break;
-            case 'c':
-                args.chapters = true;
-                break;
-            case 'v':
-                args.verbose = true;
-                break;
-            case 'h':
+    // Simple argument parsing for Windows
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        
+        // Check for help option
+        if (arg == "-h" || arg == "--help") {
+            printHelp();
+            return false;
+        }
+        
+        // Check for verbose option
+        if (arg == "-v" || arg == "--verbose") {
+            args.verbose = true;
+            continue;
+        }
+        
+        // Check for chapters option
+        if (arg == "-c" || arg == "--chapters") {
+            args.chapters = true;
+            continue;
+        }
+        
+        // Check for options with arguments
+        if (i + 1 < argc) {
+            if (arg == "-i" || arg == "--input") {
+                args.input = argv[++i];
+            } else if (arg == "-p" || arg == "--playlist") {
+                args.playlist = argv[++i];
+            } else if (arg == "-o" || arg == "--output") {
+                args.output = argv[++i];
+            } else if (arg == "-a" || arg == "--audio") {
+                args.audio = argv[++i];
+            } else if (arg == "-s" || arg == "--subtitle") {
+                args.subtitle = argv[++i];
+            } else {
+                std::cerr << "Unknown option: " << arg << std::endl;
                 printHelp();
                 return false;
-            case '?':
-                // getopt_long already printed an error message
-                printHelp();
-                return false;
-            default:
-                printHelp();
-                return false;
+            }
+        } else {
+            std::cerr << "Missing argument for option: " << arg << std::endl;
+            printHelp();
+            return false;
         }
     }
     

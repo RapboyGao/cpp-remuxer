@@ -36,18 +36,23 @@ std::string generateTempFilePath(const std::string& prefix, const std::string& s
     
     // Get current time for additional uniqueness
     std::time_t now = std::time(nullptr);
-    std::tm* localTime = std::localtime(&now);
+    std::tm localTime{};
+    #ifdef _WIN32
+    localtime_s(&localTime, &now);
+    #else
+    localtime_r(&now, &localTime);
+    #endif
     
     // Format temp file path
     std::ostringstream oss;
     oss << prefix << "_" 
-        << (localTime->tm_year + 1900) 
-        << std::setw(2) << std::setfill('0') << (localTime->tm_mon + 1)
-        << std::setw(2) << std::setfill('0') << localTime->tm_mday
+        << (localTime.tm_year + 1900) 
+        << std::setw(2) << std::setfill('0') << (localTime.tm_mon + 1)
+        << std::setw(2) << std::setfill('0') << localTime.tm_mday
         << "_" 
-        << std::setw(2) << std::setfill('0') << localTime->tm_hour
-        << std::setw(2) << std::setfill('0') << localTime->tm_min
-        << std::setw(2) << std::setfill('0') << localTime->tm_sec
+        << std::setw(2) << std::setfill('0') << localTime.tm_hour
+        << std::setw(2) << std::setfill('0') << localTime.tm_min
+        << std::setw(2) << std::setfill('0') << localTime.tm_sec
         << "_" << randomNum << suffix;
     
     return oss.str();

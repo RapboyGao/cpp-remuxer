@@ -103,7 +103,7 @@ bool parseMPLS(const std::string& mplsPath, const std::string& streamDir, MPLSIn
         
         // Generate M2TS filename (00000.m2ts, 00001.m2ts, etc.)
         char m2tsFilename[16];
-        sprintf(m2tsFilename, "%05d.m2ts", clipIndex);
+        sprintf_s(m2tsFilename, sizeof(m2tsFilename), "%05d.m2ts", clipIndex);
         std::string m2tsPath = streamDir + "/" + std::string(m2tsFilename);
         
         // Check if M2TS file exists

@@ -45,9 +45,9 @@ bool addChaptersToOutput(AVFormatContext* outFmt, const MPLSInfo& mplsInfo) {
         
         // Set chapter metadata
         char chapterKey[32];
-        sprintf(chapterKey, "title%02d", static_cast<int>(i + 1));
+        sprintf_s(chapterKey, sizeof(chapterKey), "title%02d", static_cast<int>(i + 1));
         char chapterTitle[64];
-        sprintf(chapterTitle, "Chapter %d", static_cast<int>(i + 1));
+        sprintf_s(chapterTitle, sizeof(chapterTitle), "Chapter %d", static_cast<int>(i + 1));
         
         AVDictionaryEntry* tag = av_dict_get(chapter->metadata, "title", nullptr, 0);
         if (tag) {
