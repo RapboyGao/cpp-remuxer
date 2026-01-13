@@ -1,0 +1,53 @@
+# Go项目通用忽略规则
+# 构建生成的可执行文件
+*.exe
+*.out
+*.o
+*.so
+*.dll
+
+# Go模块依赖目录
+vendor/
+
+# IDE配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统生成的文件
+Thumbs.db
+.DS_Store
+
+# 临时文件
+*.tmp
+*.temp
+*.log
+
+# 测试生成的文件
+_test.out
+
+# 项目特定忽略项
+ptmuxer.exe
+ptmuxer-gui.exe
+test_tool_path.exe
+
+# 临时目录
+temp/
+tmp/
+demux_temp/
+remux_temp/
+
+# 配置文件
+.env
+*.yaml
+*.yml
+
+# 文档生成
+_site/
+*.html
+
+# 其他
+*.bak
+*.old
+*.orig
